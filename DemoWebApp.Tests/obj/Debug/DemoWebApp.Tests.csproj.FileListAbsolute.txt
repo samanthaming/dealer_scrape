@@ -12,7 +12,6 @@ C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\bin\Debug\FluentA
 C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\bin\Debug\nunit.framework.xml
 C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\bin\Debug\WebDriver.xml
 C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\bin\Debug\WebDriver.Support.xml
-C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\obj\Debug\DemoWebApp.Tests.csprojResolveAssemblyReference.cache
 C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\obj\Debug\DemoWebApp.Tests.dll
 C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\obj\Debug\DemoWebApp.Tests.pdb
 C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\bin\Debug\Newtonsoft.Json.dll

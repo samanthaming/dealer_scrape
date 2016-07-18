@@ -77,9 +77,11 @@ namespace DemoWebApp.Tests
             string sourceFile = @"C:\Users\Public\TestFolder\Today.json";
             string destFile = @"C:\Users\Public\TestFolder\Yesterday.json";
 
-            // (assumes files already exist on local drive)
-            File.Copy(sourceFile, destFile, true);
-
+            if (File.Exists(sourceFile))
+            {
+                File.Copy(sourceFile, destFile, true);
+            }
+            
             // Write New data to Today
             using (StreamWriter file = File.CreateText(@"C:\Users\Public\TestFolder\Today.json"))
             {
