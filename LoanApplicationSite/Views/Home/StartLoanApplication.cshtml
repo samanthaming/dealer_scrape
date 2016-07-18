@@ -1,0 +1,64 @@
+﻿@using LoanApplicationSite.Models
+@model LoanApplicationDetails
+
+@{
+    ViewBag.Title = "Start Loan Application";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("SubmitApplication", "Home"))
+{
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+
+        <legend>Loan Application Details</legend>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.FirstName, new { @class = "control-label" })
+            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.LastName, new { @class = "control-label" })
+            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.ExistingAccount, new {@class = "control-label"})
+
+            <div class="radio">
+                @Html.RadioButtonFor(m => m.ExistingAccount, AccountType.None, new { id = AccountType.None })
+                <label for="@AccountType.None">@AccountType.None</label>
+            </div>
+
+            <div class="radio">
+                @Html.RadioButtonFor(m => m.ExistingAccount, AccountType.Loan, new { id = AccountType.Loan })
+                <label for="@AccountType.Loan">@AccountType.Loan</label>
+            </div>
+
+            <div class="radio">
+                @Html.RadioButtonFor(m => m.ExistingAccount, AccountType.Savings, new { id = AccountType.Savings })
+                <label for="@AccountType.Savings">@AccountType.Savings</label>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.CheckBoxFor(m => m.TermsAcceptance)
+            @Html.LabelFor(m => m.TermsAcceptance, new { @class = "control-label" })
+        </div>
+
+        @Html.ValidationSummary()
+
+        <input type="submit" value="Submit Application" class="btn btn-primary">
+</fieldset>
+
+
+
+
+
+
+}
+  

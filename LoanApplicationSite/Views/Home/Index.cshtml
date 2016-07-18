@@ -1,0 +1,122 @@
+﻿@using DemoWebApp.Tests
+@using Newtonsoft.Json
+
+@{
+    ViewBag.Title = "Home Page";
+
+    // Read file and parse it
+    string todayJson = File.ReadAllText(@"C:\Users\Public\TestFolder\Today.json");
+    Dictionary<string, List<Plan>> plans = JsonConvert.DeserializeObject<Dictionary<string, List<Plan>>>(todayJson);
+
+    string yesterdayJson = File.ReadAllText(@"C:\Users\Public\TestFolder\Yesterday.json");
+    Dictionary<string, List<Plan>> yesterdayPlans = JsonConvert.DeserializeObject<Dictionary<string, List<Plan>>>(yesterdayJson);
+}
+
+
+<div class="row hidden">
+    <div class="col-md-6">
+        <h1>Yesterday's Info</h1>
+        @foreach (var p in yesterdayPlans)
+        {
+            <h2>@p.Key</h2>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Package Name</th>
+                        <th>Price</th>
+                        <th>Region</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                @foreach (var plan in p.Value)
+                {
+                    <tr>
+                        <td>@plan.PackageName</td>
+                        <td>@plan.Price</td>
+                        <td>@plan.Province</td>
+                        <td>@plan.CreatedAt.ToString("MMM dd, yyyy. HH:mm:ss")</td>
+                    </tr>
+                }
+            </table>
+        }        
+    </div>
+    <div class="col-md-6">
+        <h1>Today's Info</h1>
+        @foreach (var p in plans)
+        {
+            <h2>@p.Key</h2>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Package Name</th>
+                        <th>Price</th>
+                        <th>Region</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                @foreach (var plan in p.Value)
+                {
+                    <tr>
+                        <td>@plan.PackageName</td>
+                        <td>@plan.Price</td>
+                        <td>@plan.Province</td>
+                        <td>@plan.CreatedAt.ToString("MMM dd, yyyy. HH:mm:ss")</td>
+                    </tr>
+                }
+            </table>
+        }       
+    </div>
+</div>
+
+
+<div class="row">
+    <h1 class="hidden">Use this</h1>  
+    @{
+
+        var combinedPlans = plans.Zip(yesterdayPlans, (tdy, ydy) => new {TodayPlan = tdy, YesterdayPlan = ydy});
+
+        foreach (var plansByRegion in combinedPlans)
+        {
+            <h1>@plansByRegion.TodayPlan.Key</h1>
+            var  combinedPlansRegion = plansByRegion.YesterdayPlan.Value.Zip(plansByRegion.TodayPlan.Value, (y, t) => new {Today = t, Yesterday = y});
+            <table class="table table-bordered">
+                
+                <thead>
+                    <tr>
+                        <th>Yesterday Package Name</th>
+                        <th>Price</th>
+                        <th>Province</th>
+                        <th>Date</th>
+                        <th>Today Package Name</th>
+                        <th>Price</th>
+                        <th>Province</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                @foreach (var plan in combinedPlansRegion)
+                {
+                    <tr @if (plan.Today.Price != plan.Yesterday.Price)
+                        {
+                            <text>style="background-color:lightcoral"</text>
+                        }>
+                        <td>@plan.Yesterday.PackageName</td>
+                        <td>@plan.Yesterday.Price</td>
+                        <td>@plan.Yesterday.Province</td>
+                        <td>@plan.Yesterday.CreatedAt.ToString("MMM dd, yyyy. HH:mm:ss")</td>
+
+                        <td>@plan.Today.PackageName</td>
+                        <td>@plan.Today.Price</td>
+                        <td>@plan.Today.Province</td>
+                        <td>@plan.Today.CreatedAt.ToString("MMM dd, yyyy. HH:mm:ss")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    }
+
+</div>
