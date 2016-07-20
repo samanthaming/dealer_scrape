@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Interactions;
@@ -31,11 +32,75 @@ namespace DemoWebApp.Tests
         {
             _driver.Quit();
         }
-
         [Test]
-        public void ScrapeRogerSiteAllPlans()
+        public void ScrapeRogerPlansForAB()
         {
-            string region = "BC";
+            scrapeRegion("AB");
+        }
+        [Test]
+        public void ScrapeRogerPlansForBC()
+        {
+            scrapeRegion("BC");
+        }
+        [Test]
+        public void ScrapeRogerPlansForMB()
+        {
+            scrapeRegion("MB");
+        }
+        [Test]
+        public void ScrapeRogerPlansForNB()
+        {
+            scrapeRegion("NB");
+        }
+        [Test]
+        public void ScrapeRogerPlansForNL()
+        {
+            scrapeRegion("NL");
+        }
+        [Test]
+        public void ScrapeRogerPlansForNS()
+        {
+            scrapeRegion("NS");
+        }
+        [Test]
+        public void ScrapeRogerPlansForNT()
+        {
+            scrapeRegion("NT");
+        }
+        [Test]
+        public void ScrapeRogerPlansForNU()
+        {
+            scrapeRegion("NU");
+        }
+        [Test]
+        public void ScrapeRogerPlansForON()
+        {
+            scrapeRegion("ON");
+        }
+        [Test]
+        public void ScrapeRogerPlansForPE()
+        {
+            scrapeRegion("PE");
+        }
+        [Test]
+        public void ScrapeRogerPlansForQC()
+        {
+            scrapeRegion("QC");
+        }
+        [Test]
+        public void ScrapeRogerPlansForSK()
+        {
+            scrapeRegion("SK");
+        }
+        [Test]
+        public void ScrapeRogerPlansForYT()
+        {
+            scrapeRegion("YT");
+        }
+
+        public void scrapeRegion(string _region)
+        {
+            string region = _region;
 
             // Select Region
             _driver.FindElement(By.ClassName("dropdown-toggle")).Click();
@@ -74,17 +139,14 @@ namespace DemoWebApp.Tests
             }
 
             // Combine All Province Plans 
-            Dictionary<string, List<Plan>> combinedPlans = new Dictionary<string, List<Plan>>()
-            {
-                {region, scrapePlans.PlanList}
-                //{"AB", programsAB.PlanList }
-            };
+            Dictionary<string, List<Plan>> combinedPlans = new Dictionary<string, List<Plan>>();
+            combinedPlans.Add(region, scrapePlans.PlanList);
 
             // Setting up the Path
             string basePath = @"C:\Users\Public\Happy";
             string combinedDirectory = Path.Combine(basePath, region);
             string filePath = string.Concat(DateTime.Now.ToFileTime().ToString(), ".json");
-            string combinedPath = Path.Combine(basePath, region, filePath); 
+            string combinedPath = Path.Combine(basePath, region, filePath);
 
             // Create Directory if it doesn't exists
             Directory.CreateDirectory(combinedDirectory);
