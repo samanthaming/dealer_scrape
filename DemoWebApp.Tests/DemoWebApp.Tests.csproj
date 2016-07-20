@@ -71,6 +71,7 @@
     <Compile Include="Plans.cs" />
     <Compile Include="PlanTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScrapeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

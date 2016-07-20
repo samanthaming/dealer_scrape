@@ -1,0 +1,71 @@
+﻿@{
+    Dictionary<string, string> tabs = new Dictionary<string, string>()
+    {
+        {"tab1", "Hottest devices for less"},
+        {"tab2", "Low device cost"},
+        {"tab3", "More upfront, less per month"},
+        {"tab4", "Pay full device cost"},
+        {"tab5", "Bring Your Own Device"},
+    };
+
+    Dictionary<string, string> callings = new Dictionary<string, string>()
+    {
+        {"canada", "Canada-Wide Calling"},
+        {"local", "Local Calling" }
+    };
+}
+
+
+@foreach (var province in Model)
+{
+    <h2>@province.Key</h2>
+    foreach (var tab in tabs)
+    {
+        var tabPlans = province.Value.Any(p => p.Tab == tab.Key);
+
+        if (tabPlans)
+        {
+            <h3>@tab.Value</h3>
+
+            foreach (var calling in callings)
+            {
+                var callingPlans = province.Value.Where(p => p.Tab == tab.Key && p.Calling == calling.Key);
+
+                if (callingPlans.Any())
+                {
+                    <h4>@calling.Value</h4>
+
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Data</th>
+                                    <th>Price</th>
+                                    <th>Term</th>
+                                    <th>Tab</th>
+                                    <th>Calling</th>
+                                    <th>Id</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var plan in callingPlans)
+                                {
+                                    <tr>
+                                        <td>@plan.Name</td>
+                                        <td>@plan.Data</td>
+                                        <td>@plan.Price</td>
+                                        <td>@plan.Term</td>
+                                        <td>@plan.Tab</td>
+                                        <td>@plan.Calling</td>
+                                        <td>@plan.Id</td>
+                                        <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                }
+            }
+        }
+    }
+}

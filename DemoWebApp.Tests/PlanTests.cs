@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 
 namespace DemoWebApp.Tests
@@ -20,7 +22,8 @@ namespace DemoWebApp.Tests
         public void BeforeEachTest()
         {
             _driver = new FirefoxDriver();
-            _driver.Navigate().GoToUrl("https://www.rogers.com/consumer/wireless/share-everything");
+            _driver.Navigate().GoToUrl("https://www.rogers.com/consumer/wireless/smartphone-plans");
+            _driver.Manage().Window.Maximize();
         }
 
         [TearDown]
@@ -30,7 +33,7 @@ namespace DemoWebApp.Tests
         }
 
         [Test]
-        public void ScrapSite()
+        public void ScrapeRogerSiteAllPlans()
         {
             string region = "BC";
 
@@ -42,53 +45,64 @@ namespace DemoWebApp.Tests
             // maybe there's a better solution?
             _driver.Navigate().Refresh();
 
-            // Scrape Plans (BC for now...)
+            // Create Tab and Calling Names
+            // (improve: scrape tab/calling name instead of hardcode)
+            string[] tabs = new string[] {"tab1", "tab2", "tab3", "tab4", "tab5"};
+            string[] callings = new string[] {"canada", "local"};
+
+            // Scrape Data
             Plans scrapePlans = new Plans();
 
-
-            var scrapePackageNames = _driver.FindElements(By.ClassName("package-data"));
-            var scrapePrices = _driver.FindElements(By.ClassName("price-dollars"));
-
-            var scrapePackagesAndPrices = scrapePackageNames.Zip(scrapePrices, (package, price) =>
-                new { PackageName = package, Price = price });
-
-            foreach (var plan in scrapePackagesAndPrices)
+            foreach (var tab in tabs)
             {
-                scrapePlans.AddPlan(region, plan.PackageName.Text, plan.Price.Text);
+                foreach (var calling in callings)
+                {
+                    var elements = _driver.FindElements(By.CssSelector($"[data-slider='{tab}'] .share-{calling} .tile"));
+                    foreach (var element in elements)
+                    {
+                        scrapePlans.AddPlan(
+                            element.GetAttribute("data-name"), 
+                            element.GetAttribute("data-data"), 
+                            element.GetAttribute("data-price"), 
+                            element.GetAttribute("data-term"),
+                            tab,
+                            calling,
+                            $"{tab}{calling}{element.GetAttribute("data-data")}" // id, must be unique
+                        );
+                    }
+                }
             }
 
-            // Add Mock AB Plans
-            //Plans programsAB = new Plans();
-            //programsAB.AddPlan("AB", "2GB", "300");
-            //programsAB.AddPlan("AB", "4GB", "300");
-            //programsAB.AddPlan("AB", "6GB", "300");
-
-
-            // Combine the Plans 
+            // Combine All Province Plans 
             Dictionary<string, List<Plan>> combinedPlans = new Dictionary<string, List<Plan>>()
             {
-                {region, scrapePlans.PlanList},
+                {region, scrapePlans.PlanList}
                 //{"AB", programsAB.PlanList }
             };
 
+            // Setting up the Path
+            string basePath = @"C:\Users\Public\Happy";
+            string combinedDirectory = Path.Combine(basePath, region);
+            string filePath = string.Concat(DateTime.Now.ToFileTime().ToString(), ".json");
+            string combinedPath = Path.Combine(basePath, region, filePath); 
 
-            // Copy Today's Data to Yesterday's Data
+            // Create Directory if it doesn't exists
+            Directory.CreateDirectory(combinedDirectory);
 
-            string sourceFile = @"C:\Users\Public\TestFolder\Today.json";
-            string destFile = @"C:\Users\Public\TestFolder\Yesterday.json";
-
-            if (File.Exists(sourceFile))
+            // Create file  if it doesn't exists
+            if (!System.IO.File.Exists(combinedPath))
             {
-                File.Copy(sourceFile, destFile, true);
+                using (StreamWriter file = File.CreateText(combinedPath))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(file, combinedPlans);
+                }
             }
-            
-            // Write New data to Today
-            using (StreamWriter file = File.CreateText(@"C:\Users\Public\TestFolder\Today.json"))
+            else
             {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(file, combinedPlans);
+                Console.WriteLine("File \"{0}\" already exists.", combinedPath);
+                return;
             }
         }
     }
-
 }

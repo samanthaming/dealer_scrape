@@ -16,3 +16,4 @@ C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\obj\Debug\DemoWeb
 C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\obj\Debug\DemoWebApp.Tests.pdb
 C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\bin\Debug\Newtonsoft.Json.dll
 C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Samantha.Ming\Desktop\GettingStarted\DemoWebApp.Tests\obj\Debug\DemoWebApp.Tests.csprojResolveAssemblyReference.cache
