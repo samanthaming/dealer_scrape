@@ -140,6 +140,58 @@
     @*@Html.Partial("_TablePlans", firstRecentPlans);*@
 </div>
 
+<div class="row">
+    <h1 style="color: royalblue;">Changed Plans</h1>
+    
+        @foreach (var province in firstRecentPlans)
+        {
+            var previousPlans = secondRecentPlans[province.Key];
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Id</th>                                       
+                        <th>Name</th>
+                        <th>Data</th>                                        
+                        <th>Term</th>
+                        <th>Tab</th>
+                        <th>Calling</th>
+
+                        <th>Date</th>
+                        <th>Yesterday Price</th>
+                                        
+                        <th>Date</th>
+                        <th>Today Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var plan in province.Value)
+                {
+                    var previousPlan = previousPlans.FirstOrDefault(p => p.Id == plan.Id);
+                    if (previousPlan != null)
+                    {                       
+                        if (previousPlan.Price != plan.Price)
+                        {
+                            <tr>
+                                <td>@plan.Id</td>
+                                <td>@plan.Name</td>
+                                <td>@plan.Data</td>
+                                <td>@plan.Term</td>
+                                <td>@plan.Tab</td>
+                                <td>@plan.Calling</td>
+
+                                <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                                <td>@previousPlan.Price</td>
+
+                                <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                                <td>@plan.Price</td>
+                            </tr>
+                        }
+                    }
+                }
+                </tbody>
+            </table>
+        }
+</div>
 
 <div class="row">
     <h1 style="color: green;" >New Plans Added</h1>
