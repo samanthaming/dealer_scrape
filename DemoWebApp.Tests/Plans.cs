@@ -15,9 +15,17 @@ namespace DemoWebApp.Tests
             PlanList = new List<Plan>();
         }
 
-        public void AddPlan(string name, string data, string price, string term, string tab, string calling, string id)
+        public void AddPlan(
+            string name,
+            string data,
+            string price,
+            string term,
+            string tab,
+            string calling,
+            string id,
+            string province)
         {
-            PlanList.Add(new Plan(name, data, price, term, tab, calling, id));
+            PlanList.Add(new Plan(name, data, price, term, tab, calling, id, province));
         }
     }
 }

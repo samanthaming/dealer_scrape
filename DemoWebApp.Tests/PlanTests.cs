@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium.Interactions;
-using OpenQA.Selenium.Support.UI;
 
 namespace DemoWebApp.Tests
 {
@@ -31,6 +24,11 @@ namespace DemoWebApp.Tests
         public void AfterEachTest()
         {
             _driver.Quit();
+
+            // [TO DO] Need to account for when test fails:
+            //  - run that specific test again
+            //  - or let user know test fails and they manually run it again
+            //  - what happens to the file when test fails?
         }
         [Test]
         public void ScrapeRogerPlansForAB()
@@ -126,21 +124,18 @@ namespace DemoWebApp.Tests
                     foreach (var element in elements)
                     {
                         scrapePlans.AddPlan(
-                            element.GetAttribute("data-name"), 
-                            element.GetAttribute("data-data"), 
-                            element.GetAttribute("data-price"), 
+                            element.GetAttribute("data-name"),
+                            element.GetAttribute("data-data"),
+                            element.GetAttribute("data-price"),
                             element.GetAttribute("data-term"),
                             tab,
                             calling,
-                            $"{tab}{calling}{element.GetAttribute("data-data")}" // id, must be unique
+                            $"{tab}{calling}{element.GetAttribute("data-data")}", // id, must be unique
+                            region
                         );
                     }
                 }
             }
-
-            // Combine All Province Plans 
-            Dictionary<string, List<Plan>> combinedPlans = new Dictionary<string, List<Plan>>();
-            combinedPlans.Add(region, scrapePlans.PlanList);
 
             // Setting up the Path
             string basePath = @"C:\Users\Public\Happy";
@@ -157,7 +152,7 @@ namespace DemoWebApp.Tests
                 using (StreamWriter file = File.CreateText(combinedPath))
                 {
                     JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(file, combinedPlans);
+                    serializer.Serialize(file, scrapePlans.PlanList);
                 }
             }
             else

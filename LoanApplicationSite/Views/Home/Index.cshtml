@@ -4,10 +4,11 @@
 @{
     ViewBag.Title = "Home Page";
     bool secondFileIsExistAndNotEmpty = false;
-    Dictionary<string, List<Plan>> secondRecentPlans = new Dictionary<string, List<Plan>>();
+    var testing = false;
+    List<Plan> secondRecentPlans = new List<Plan>();
 
     // Set up Path names to get files
-    string region = "MB";
+    string region = "YT";
     string basePath = @"C:\Users\Public\Happy";
     string combinedDirectory = Path.Combine(basePath, region);
 
@@ -19,19 +20,19 @@
 
     // Get First Recent File
     string firstRecentFile = File.ReadAllText(files[0].FullName);
-    Dictionary<string, List<Plan>> firstRecentPlans = JsonConvert.DeserializeObject<Dictionary<string, List<Plan>>>(firstRecentFile);
+    List<Plan> firstRecentPlans = JsonConvert.DeserializeObject<List<Plan>>(firstRecentFile);
 
     // Get Second Most Recent File
     if (files.Length > 1)
     {
         string secondRecentFile = File.ReadAllText(files[1].FullName);
-        secondRecentPlans = JsonConvert.DeserializeObject<Dictionary<string, List<Plan>>>(secondRecentFile);
+        secondRecentPlans = JsonConvert.DeserializeObject<List<Plan>>(secondRecentFile);
 
-        // Need to also check that Values are not empty, which can happen if scrape test fails
-        if (secondRecentPlans.Values.FirstOrDefault().Count > 0)
-        {
-            secondFileIsExistAndNotEmpty = true;
-        }
+        // [TO DO] Implement something if scrape test fails. Need to know what that looks like first?
+        //if (secondRecentPlans.Values.FirstOrDefault().Count > 0)
+        //{
+        //    secondFileIsExistAndNotEmpty = true;
+        //}
     }
 
     // Set up Tabs and Callings name
@@ -53,112 +54,21 @@
 
 }
 
+
 <div class="row">
-    
-    @if (secondRecentPlans.Count != 0)
-    {
-        <h1>Roger Plans</h1>
-
-        foreach (var province in firstRecentPlans)
-        {
-            var previousPlans = secondRecentPlans[province.Key];
-            //var previousPlans = secondRecentPlans.TryGetValue[province.Key, out value];
-
-            <h2>@province.Key</h2>
-
-            // Loop through Tabs
-            foreach (var tab in tabs)
-            {
-                var tabPlans = province.Value.Any(p => p.Tab == tab.Key);
-
-                if (tabPlans)
-                {
-                    <h3>@tab.Value</h3>
-
-                    // Loop through Callings
-                    foreach (var calling in callings)
-                    {
-                        var callingPlans = province.Value.Where(p => p.Tab == tab.Key && p.Calling == calling.Key);
-                        if (callingPlans.Any())
-                        {
-                            <h4>@calling.Value</h4>
-
-                            <table class="table table-bordered">
-                                <thead>
-                                <tr>
-                                    <th>Id</th>
-                                    <th>Name</th>
-                                    <th>Data</th>
-                                    <th>Term</th>
-                                    <th>Tab</th>
-                                    <th>Calling</th>
-
-                                    <th>Date</th>
-                                    <th>Yesterday Price</th>
-
-                                    <th>Date</th>
-                                    <th>Today Price</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach (var plan in callingPlans)
-                                {
-                                    var previousPlan = previousPlans.FirstOrDefault(p => p.Id == plan.Id);
-
-                                    if (previousPlan != null)
-                                    {
-                                        previousPlan.IsProcessed = true;
-                                        <tr @if (previousPlan.Price != plan.Price)
-                                            {
-                                                <text> style="background-color: lightcoral" </text>
-                                            }>
-                                            <td>@plan.Id</td>
-                                            <td>@plan.Name</td>
-                                            <td>@plan.Data</td>
-                                            <td>@plan.Term</td>
-                                            <td>@plan.Tab</td>
-                                            <td>@plan.Calling</td>
-
-                                            <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                                            <td>@previousPlan.Price</td>
-
-                                            <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                                            <td>@plan.Price</td>
-                                        </tr>
-                                    }
-                                    else
-                                    {
-                                        // Mark New Plans
-                                        plan.IsNew = true;
-                                    }
-                                }
-                                </tbody>
-                            </table>
-                        }
-                    }
-                }
-            }
-
-        }
-    }
-    else
-    {
-        <h1>No Second File to Compare to</h1>
-    }
-
-    @*@Html.Partial("_TablePlans", firstRecentPlans);*@
-</div>
-
-@if (secondFileIsExistAndNotEmpty)
+@foreach (var tab in tabs)
 {
-    <div class="row">
-        <h1 style="color: royalblue;">Changed Plans</h1>
+    <h3>@tab.Value</h3>
 
-        @foreach (var province in firstRecentPlans)
-        {
-            var previousPlans = secondRecentPlans[province.Key];
-            <table class="table table-bordered">
-                <thead>
+    foreach (var calling in callings)
+    {
+        <h4>@calling.Value</h4>
+
+        // Most Recent Plan
+        var firstPlans = firstRecentPlans.Where(p => p.Tab == tab.Key && p.Calling == calling.Key);
+
+        <table class="table table-bordered">
+            <thead>
                 <tr>
                     <th>Id</th>
                     <th>Name</th>
@@ -168,113 +78,163 @@
                     <th>Calling</th>
 
                     <th>Date</th>
-                    <th>Yesterday Price</th>
+                    <th>Previous Price</th>
 
                     <th>Date</th>
                     <th>Today Price</th>
                 </tr>
-                </thead>
-                <tbody>
-                @foreach (var plan in province.Value)
+            </thead>
+            <tbody>
+                @foreach (var plan in firstPlans)
                 {
-                    var previousPlan = previousPlans.FirstOrDefault(p => p.Id == plan.Id);
-                    if (previousPlan != null)
+                    // Get the Second Most Recent Plan that matches the id
+                    var secondPlan = secondRecentPlans.FirstOrDefault(p => p.Id == plan.Id);
+
+                    if (secondPlan != null)
                     {
-                        if (previousPlan.Price != plan.Price)
-                        {
-                            <tr>
-                                <td>@plan.Id</td>
-                                <td>@plan.Name</td>
-                                <td>@plan.Data</td>
-                                <td>@plan.Term</td>
-                                <td>@plan.Tab</td>
-                                <td>@plan.Calling</td>
+                        secondPlan.IsProcessed = true;
+                        <tr @if (secondPlan.Price != plan.Price)
+                            {
+                                <text> style="background-color: lightcoral" </text>
+                            }>
+                            <td>@plan.Id</td>
+                            <td>@plan.Name</td>
+                            <td>@plan.Data</td>
+                            <td>@plan.Term</td>
+                            <td>@plan.Tab</td>
+                            <td>@plan.Calling</td>
 
-                                <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                                <td>@previousPlan.Price</td>
+                            <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                            <td>@secondPlan.Price</td>
 
-                                <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                                <td>@plan.Price</td>
-                            </tr>
-                        }
+                            <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                            <td>@plan.Price</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        // Mark New Plans
+                        plan.IsNew = true;
                     }
                 }
-                </tbody>
-            </table>
-        }
-    </div>
-
-    <div class="row">
-        <h1 style="color: green;">New Plans Added</h1>
-
-        @foreach (var province in firstRecentPlans)
-        {
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Data</th>
-                    <th>Term</th>
-                    <th>Tab</th>
-                    <th>Calling</th>
-                    <th>Date</th>
-                    <th>Price</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var plan in province.Value.Where(p => p.IsNew))
-                {
-                    <tr>
-                        <td>@plan.Id</td>
-                        <td>@plan.Name</td>
-                        <td>@plan.Data</td>
-                        <td>@plan.Term</td>
-                        <td>@plan.Tab</td>
-                        <td>@plan.Calling</td>
-                        <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                        <td>@plan.Price</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        }
-    </div>
-
-    <div class="row">
-        <h1 style="color: red">Discontinued Plans</h1>
-        @foreach (var province in secondRecentPlans)
-        {
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Data</th>
-                    <th>Term</th>
-                    <th>Tab</th>
-                    <th>Calling</th>
-                    <th>Date</th>
-                    <th>Price</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var plan in province.Value.Where(p => !p.IsProcessed))
-                {
-                    <tr>
-                        <td>@plan.Id</td>
-                        <td>@plan.Name</td>
-                        <td>@plan.Data</td>
-                        <td>@plan.Term</td>
-                        <td>@plan.Tab</td>
-                        <td>@plan.Calling</td>
-                        <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                        <td>@plan.Price</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        }
-    </div>
-
+            </tbody>
+        </table>
+    }
 }
+</div>
+
+<div class="row">
+    <h1 style="color: royalblue;" >Changed Plans</h1>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Data</th>
+                <th>Term</th>
+                <th>Tab</th>
+                <th>Calling</th>
+
+                <th>Date</th>
+                <th>Previous Price</th>
+
+                <th>Date</th>
+                <th>Today Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var plan in firstRecentPlans)
+            {
+                // Get the Second Most Recent Plan that matches the id
+                var secondPlan = secondRecentPlans.FirstOrDefault(p => p.Id == plan.Id && p.Price != plan.Price);
+
+                if (secondPlan != null)
+                {
+                    <tr>
+                        <td>@plan.Id</td>
+                        <td>@plan.Name</td>
+                        <td>@plan.Data</td>
+                        <td>@plan.Term</td>
+                        <td>@plan.Tab</td>
+                        <td>@plan.Calling</td>
+
+                        <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                        <td>@secondPlan.Price</td>
+
+                        <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                        <td>@plan.Price</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="row">
+    <h1 style="color: green;" >New Plans Added</h1>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Data</th>
+                <th>Term</th>
+                <th>Tab</th>
+                <th>Calling</th>
+                <th>Date</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var plan in firstRecentPlans.Where(p => p.IsNew))
+        {
+            <tr>
+                <td>@plan.Id</td>
+                <td>@plan.Name</td>
+                <td>@plan.Data</td>
+                <td>@plan.Term</td>
+                <td>@plan.Tab</td>
+                <td>@plan.Calling</td>
+                <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                <td>@plan.Price</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<div class="row">
+    <h1 style="color:red">Discontinued Plans</h1>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Data</th>
+                <th>Term</th>
+                <th>Tab</th>
+                <th>Calling</th>
+                <th>Date</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var plan in secondRecentPlans.Where(p => !p.IsProcessed))
+        {
+            <tr>
+                <td>@plan.Id</td>
+                <td>@plan.Name</td>
+                <td>@plan.Data</td>
+                <td>@plan.Term</td>
+                <td>@plan.Tab</td>
+                <td>@plan.Calling</td>
+                <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                <td>@plan.Price</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
