@@ -9,7 +9,7 @@
 
     // Set up Path names to get files
     string region = "YT";
-    string basePath = @"C:\Users\Public\Happy";
+    string basePath = @"C:\Users\Public\Rogers";
     string combinedDirectory = Path.Combine(basePath, region);
 
     // Get all Files
@@ -52,30 +52,130 @@
         {"local", "Local Calling" }
     };
 
+
+    // Process Plans
+    foreach (var tab in tabs)
+    {
+        foreach (var calling in callings)
+        {
+            var firstPlans = firstRecentPlans.Where(p => p.Tab == tab.Key && p.Calling == calling.Key);
+
+            foreach (var plan in firstPlans)
+            {
+                var secondPlan = secondRecentPlans.FirstOrDefault(p => p.Id == plan.Id);
+
+                if (secondPlan != null)
+                {
+                    secondPlan.IsProcessed = true;
+                }
+                else
+                {
+                    plan.IsNew = true;
+                }
+            }
+        }
+    }
+
+    // Initialize Plans
+    var changedPlans = new List<Plan>();
+    var newPlans = new List<Plan>();
+    var discontinuedPlans = new List<Plan>();
+
+    // Changed Plans
+    foreach (var plan in firstRecentPlans)
+    {
+        var secondPlan = secondRecentPlans.FirstOrDefault(p => p.Id == plan.Id && p.Price != plan.Price);
+        if (secondPlan != null)
+        {
+            changedPlans.Add(plan);
+        }
+
+    }
+
+    // New Plans
+    foreach (var plan in firstRecentPlans.Where(p => p.IsNew))
+    {
+        newPlans.Add(plan);
+    }
+
+    // Discontinued Plans
+    foreach (var plan in secondRecentPlans.Where(p => !p.IsProcessed))
+    {
+        discontinuedPlans.Add(plan);
+    }
+
 }
 
+<div class="container container-margin-top">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="panel-solid panel-solid-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Changed Plans</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="panel-body-count">
+                        @changedPlans.Count
+                    </div>
+                    <div class="panel-body-icon">
+                        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="panel-solid panel-solid-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">New Plans</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="panel-body-count">
+                        @newPlans.Count
+                    </div>
+                    <div class="panel-body-icon">
+                        <i class="fa fa-repeat" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="panel-solid panel-solid-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Discontinued Plans</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="panel-body-count">
+                        @discontinuedPlans.Count
+                    </div>
+                    <div class="panel-body-icon">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<div class="row">
-@foreach (var tab in tabs)
-{
-    <h3>@tab.Value</h3>
+<div class="container-fluid">
+    <div class="col-xs-12 col-sm-12" style="margin: 80px 0 80px;">
+        <div class="hr-text"><span>DETAILS</span></div>
+    </div>
+</div>
 
-    foreach (var calling in callings)
-    {
-        <h4>@calling.Value</h4>
+<div class="container container-margin-top">
+    <div class="panel panel-table panel-table-primary">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Changed Plans</div>
 
-        // Most Recent Plan
-        var firstPlans = firstRecentPlans.Where(p => p.Tab == tab.Key && p.Calling == calling.Key);
-
-        <table class="table table-bordered">
+        <!-- Table -->
+        <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Id</th>
-                    <th>Name</th>
                     <th>Data</th>
-                    <th>Term</th>
                     <th>Tab</th>
                     <th>Calling</th>
+                    <th>Name</th>
+                    <th>Term</th>
 
                     <th>Date</th>
                     <th>Previous Price</th>
@@ -85,65 +185,6 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var plan in firstPlans)
-                {
-                    // Get the Second Most Recent Plan that matches the id
-                    var secondPlan = secondRecentPlans.FirstOrDefault(p => p.Id == plan.Id);
-
-                    if (secondPlan != null)
-                    {
-                        secondPlan.IsProcessed = true;
-                        <tr @if (secondPlan.Price != plan.Price)
-                            {
-                                <text> style="background-color: lightcoral" </text>
-                            }>
-                            <td>@plan.Id</td>
-                            <td>@plan.Name</td>
-                            <td>@plan.Data</td>
-                            <td>@plan.Term</td>
-                            <td>@plan.Tab</td>
-                            <td>@plan.Calling</td>
-
-                            <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                            <td>@secondPlan.Price</td>
-
-                            <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                            <td>@plan.Price</td>
-                        </tr>
-                    }
-                    else
-                    {
-                        // Mark New Plans
-                        plan.IsNew = true;
-                    }
-                }
-            </tbody>
-        </table>
-    }
-}
-</div>
-
-<div class="row">
-    <h1 style="color: royalblue;" >Changed Plans</h1>
-
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Data</th>
-                <th>Term</th>
-                <th>Tab</th>
-                <th>Calling</th>
-
-                <th>Date</th>
-                <th>Previous Price</th>
-
-                <th>Date</th>
-                <th>Today Price</th>
-            </tr>
-        </thead>
-        <tbody>
             @foreach (var plan in firstRecentPlans)
             {
                 // Get the Second Most Recent Plan that matches the id
@@ -151,90 +192,94 @@
 
                 if (secondPlan != null)
                 {
-                    <tr>
-                        <td>@plan.Id</td>
-                        <td>@plan.Name</td>
-                        <td>@plan.Data</td>
-                        <td>@plan.Term</td>
-                        <td>@plan.Tab</td>
-                        <td>@plan.Calling</td>
+                        <tr>
+                            <td>@plan.Data</td>
+                            <td>@tabs[plan.Tab]</td>
+                            <td>@callings[plan.Calling]</td>
+                            <td>@plan.Name</td>
+                            <td>@plan.Term</td>
 
-                        <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                        <td>@secondPlan.Price</td>
+                            <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                            <td>@secondPlan.Price</td>
 
-                        <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                        <td>@plan.Price</td>
-                    </tr>
+                            <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                            <td class="td-price">@plan.Price</td>
+                        </tr>
                 }
             }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<div class="row">
-    <h1 style="color: green;" >New Plans Added</h1>
+<div class="container container-margin-top">
+    <div class="panel panel-table panel-table-success">
+        <!-- Default panel contents -->
+        <div class="panel-heading">New Plans</div>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Data</th>
-                <th>Term</th>
-                <th>Tab</th>
-                <th>Calling</th>
-                <th>Date</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var plan in firstRecentPlans.Where(p => p.IsNew))
-        {
-            <tr>
-                <td>@plan.Id</td>
-                <td>@plan.Name</td>
-                <td>@plan.Data</td>
-                <td>@plan.Term</td>
-                <td>@plan.Tab</td>
-                <td>@plan.Calling</td>
-                <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                <td>@plan.Price</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+        <!-- Table -->
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tab</th>
+                    <th>Calling</th>
+                    <th>Name</th>
+                    <th>Term</th>
+                    <th>Date</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var plan in newPlans)
+                {
+                    <tr>
+                        <td>@plan.Data</td>
+                        <td>@tabs[plan.Tab]</td>
+                        <td>@callings[plan.Calling]</td>
+                        <td>@plan.Name</td>
+                        <td>@plan.Term</td>
+                        <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                        <td class="td-price">@plan.Price</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<div class="row">
-    <h1 style="color:red">Discontinued Plans</h1>
+<div class="container container-margin-top">
+    <div class="panel panel-table panel-table-danger">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Discontinued Plans</div>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Data</th>
-                <th>Term</th>
-                <th>Tab</th>
-                <th>Calling</th>
-                <th>Date</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var plan in secondRecentPlans.Where(p => !p.IsProcessed))
-        {
-            <tr>
-                <td>@plan.Id</td>
-                <td>@plan.Name</td>
-                <td>@plan.Data</td>
-                <td>@plan.Term</td>
-                <td>@plan.Tab</td>
-                <td>@plan.Calling</td>
-                <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                <td>@plan.Price</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+        <!-- Table -->
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tab</th>
+                    <th>Calling</th>
+                    <th>Name</th>
+                    <th>Term</th>
+                    <th>Date</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var plan in discontinuedPlans)
+                {
+                    <tr>
+                        <td>@plan.Data</td>
+                        <td>@tabs[plan.Tab]</td>
+                        <td>@callings[plan.Calling]</td>
+                        <td>@plan.Name</td>
+                        <td>@plan.Term</td>
+                        <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                        <td class="td-price">@plan.Price</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
