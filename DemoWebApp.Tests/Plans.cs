@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,26 +7,27 @@ using System.Threading.Tasks;
 
 namespace DemoWebApp.Tests
 {
-    public class Plans
+    public class Plans : IEnumerable<Plan>
     {
-       public List<Plan> PlanList { get; set; }
+        private readonly List<Plan> _plans;
 
         public Plans()
         {
-            PlanList = new List<Plan>();
+            _plans = new List<Plan>();
         }
 
-        public void AddPlan(
-            string name,
-            string data,
-            string price,
-            string term,
-            string tab,
-            string calling,
-            string id,
-            string province)
+        public void Add(Plan plan)
         {
-            PlanList.Add(new Plan(name, data, price, term, tab, calling, id, province));
+            _plans.Add(plan);
+        }
+
+        public IEnumerator<Plan> GetEnumerator()
+        {
+            return _plans.GetEnumerator();
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }

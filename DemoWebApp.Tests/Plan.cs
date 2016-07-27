@@ -17,27 +17,11 @@ namespace DemoWebApp.Tests
         public bool IsProcessed { get; set; }
         public bool IsNew { get; set; }
 
-        public Plan(
-            string name,
-            string data,
-            string price,
-            string term,
-            string tab,
-            string calling,
-            string id,
-            string province)
+        public Plan()
         {
-            Name = name;
-            Data = data;
-            Price = price;
-            Term = term;
-            Tab = tab;
-            Province = province;
-            Calling = calling;
-            Id = id;
-            CreatedAt = DateTime.Now;
-            IsProcessed = false;
             IsNew = false;
+            IsProcessed = false;
+            CreatedAt = DateTime.Now;
         }
     }
 }
