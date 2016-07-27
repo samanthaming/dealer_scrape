@@ -1,0 +1,90 @@
+﻿.container-margin-top {
+  margin-top: 50px;
+}
+.panel-solid {
+  border-radius: 5px;
+  color: white;
+  padding: 20px;
+}
+.panel-solid .panel-heading {
+  padding: 0;
+}
+.panel-solid .panel-title {
+  text-transform: uppercase;
+  font-size: 14px;
+}
+.panel-solid .panel-body {
+  display: flex;
+  padding: 0px;
+  font-size: 35px;
+}
+.panel-solid .panel-body-count {
+  flex-grow: 1;
+}
+.panel-solid-primary {
+  background-color: #348FE2;
+  border: 1px solid #348FE2;
+}
+.panel-solid-success {
+  background-color: #00ACAC;
+  border: 1px solid #00ACAC;
+}
+.panel-solid-danger {
+  background-color: #FF5B57;
+  border: 1px solid #FF5B57;
+}
+.panel-table {
+  margin-top: 20px;
+}
+.panel-table .panel-heading {
+  color: white;
+}
+.panel-table table.table thead th {
+  padding-top: 15px;
+  padding-bottom: 10px;
+  text-transform: uppercase;
+  /*font-weight: normal;*/
+  color: #444;
+  font-size: 12px;
+}
+.panel-table table.table tbody td {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.panel-table .td-price {
+  font-weight: bold;
+}
+.panel-table-primary {
+  border: 1px solid #348FE2;
+}
+.panel-table-primary .panel-heading {
+  background-color: #348FE2;
+}
+.panel-table-success {
+  border: 1px solid #00ACAC;
+}
+.panel-table-success .panel-heading {
+  background-color: #00ACAC;
+}
+.panel-table-danger {
+  border: 1px solid #FF5B57;
+}
+.panel-table-danger .panel-heading {
+  background-color: #FF5B57;
+}
+.hr-text {
+  width: 100%;
+  height: 13px;
+  border-bottom: 2px solid #d7d7d7;
+  text-align: center;
+}
+.hr-text span {
+  font-size: 20px;
+  background-color: white;
+  padding: 0 5%;
+  color: #555;
+}
+.table-hover > tbody > tr:hover > td,
+.table-hover > tbody > tr:hover > th {
+  background-color: #F5F5F5;
+}

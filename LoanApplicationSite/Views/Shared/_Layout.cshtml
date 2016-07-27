@@ -7,21 +7,22 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     <meta name="description" content="The description of my page" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                @Html.ActionLink("Loan Application", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>          
+                @Html.ActionLink("Dealer Scraping Tool", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
         </div>
     </div>
-    <div class="container body-content">
+    <div class="container-fluid body-content">
         @RenderBody()
-        <hr />
+        @*<hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Loan Application Site</p>
-        </footer>
+            <p>&copy; @DateTime.Now.Year | E-Commies Internal Dealer Scraping Tool</p>
+        </footer>*@
     </div>
 
     @Scripts.Render("~/bundles/jquery")

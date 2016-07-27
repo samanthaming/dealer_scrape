@@ -253,32 +253,35 @@
         <!-- Default panel contents -->
         <div class="panel-heading">Discontinued Plans</div>
 
-        <!-- Table -->
-        <table class="table table-hover">
+        <h1 style="color:red">Discontinued Plans</h1>
+
+        <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th>Id</th>
+                    <th>Name</th>
                     <th>Data</th>
+                    <th>Term</th>
                     <th>Tab</th>
                     <th>Calling</th>
-                    <th>Name</th>
-                    <th>Term</th>
                     <th>Date</th>
                     <th>Price</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var plan in discontinuedPlans)
-                {
-                    <tr>
-                        <td>@plan.Data</td>
-                        <td>@tabs[plan.Tab]</td>
-                        <td>@callings[plan.Calling]</td>
-                        <td>@plan.Name</td>
-                        <td>@plan.Term</td>
-                        <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
-                        <td class="td-price">@plan.Price</td>
-                    </tr>
-                }
+            @foreach (var plan in secondRecentPlans.Where(p => !p.IsProcessed))
+            {
+                <tr>
+                    <td>@plan.Id</td>
+                    <td>@plan.Name</td>
+                    <td>@plan.Data</td>
+                    <td>@plan.Term</td>
+                    <td>@plan.Tab</td>
+                    <td>@plan.Calling</td>
+                    <td>@plan.CreatedAt.ToString("MMM dd yyyy hh:mmtt")</td>
+                    <td>@plan.Price</td>
+                </tr>
+            }
             </tbody>
         </table>
     </div>

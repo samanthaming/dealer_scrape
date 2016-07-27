@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using OpenQA.Selenium;
@@ -114,7 +117,7 @@ namespace DemoWebApp.Tests
             string[] callings = new string[] {"canada", "local"};
 
             // Scrape Data
-            Plans scrapePlans = new Plans();
+            var plans = new Plans();
 
             foreach (var tab in tabs)
             {
@@ -123,16 +126,17 @@ namespace DemoWebApp.Tests
                     var elements = _driver.FindElements(By.CssSelector($"[data-slider='{tab}'] .share-{calling} .tile"));
                     foreach (var element in elements)
                     {
-                        scrapePlans.AddPlan(
-                            element.GetAttribute("data-name"),
-                            element.GetAttribute("data-data"),
-                            element.GetAttribute("data-price"),
-                            element.GetAttribute("data-term"),
-                            tab,
-                            calling,
-                            $"{tab}{calling}{element.GetAttribute("data-data")}", // id, must be unique
-                            region
-                        );
+                        plans.Add(new Plan
+                        {
+                            Name = element.GetAttribute("data-name"),
+                            Data = element.GetAttribute("data-data"),
+                            Price = element.GetAttribute("data-price"),
+                            Term = element.GetAttribute("data-term"),
+                            Tab = tab,
+                            Calling = calling,
+                            Id = $"{tab}{calling}{element.GetAttribute("data-data")}", // id, must be unique
+                            Province = region
+                        });
                     }
                 }
             }
@@ -147,12 +151,12 @@ namespace DemoWebApp.Tests
             Directory.CreateDirectory(combinedDirectory);
 
             // Create file  if it doesn't exists
-            if (!System.IO.File.Exists(combinedPath))
+            if (!File.Exists(combinedPath))
             {
                 using (StreamWriter file = File.CreateText(combinedPath))
                 {
                     JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(file, scrapePlans.PlanList);
+                    serializer.Serialize(file, plans.ToList());
                 }
             }
             else
