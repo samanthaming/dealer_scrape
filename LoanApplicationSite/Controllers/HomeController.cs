@@ -1,4 +1,6 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
+using System.Web.Services.Description;
 using LoanApplicationSite.Models;
 
 namespace LoanApplicationSite.Controllers
@@ -11,7 +13,7 @@ namespace LoanApplicationSite.Controllers
         }
 
         public ActionResult StartLoanApplication()
-        {            
+        {
             return View(new LoanApplicationDetails {ExistingAccount=AccountType.None});
         }
 
@@ -25,7 +27,7 @@ namespace LoanApplicationSite.Controllers
             }
 
             SimulateSavingToDatabaseOrBackendSystem();
-            
+
             return View("ApplicationComplete", new ApplicationCompleteConfirmation {FirstName= applicationDetails.FirstName});
         }
 
@@ -37,6 +39,37 @@ namespace LoanApplicationSite.Controllers
         public ActionResult ApplicationComplete(ApplicationCompleteConfirmation confirmationDetails)
         {
             return View(confirmationDetails);
+        }
+
+        //public ActionResult SubmitForm(PlanSelectionDetails planSelectionDetails)
+        //{
+
+        //    return View("ComparePlansResult", new ComparePlansResultConfirmation {FilesName = planSelectionDetails});
+        //}
+
+        public ActionResult SubmitForm()
+        {
+            string[] fileList = Request.Form.GetValues("vehicle");
+            string[] provinceList = Request.Form.GetValues("province");
+
+
+            if (fileList != null && provinceList != null)
+            {
+                if (fileList.Length == 2 && provinceList.Length == 1)
+                {
+                    ViewData["selectedFileOne"] = fileList[0];
+                    ViewData["selectedFileTwo"] = fileList[1];
+                    ViewData["selectedProvince"] = provinceList[0];
+
+                    return View("ComparePlansResult");
+                }
+
+                ViewData["CheckBoxError"] = "Please select 2 files only";
+                return View("Index");
+            }
+
+            ViewData["CheckBoxError"] = "Please select 2 files to compare";
+            return View("Index");
         }
     }
 }

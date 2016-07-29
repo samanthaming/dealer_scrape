@@ -20,6 +20,6 @@ namespace LoanApplicationSite.Models
         [Required]
         [DisplayName("I accept the terms and conditions")]
         [Range(typeof(bool), "true", "true", ErrorMessage = "You must accept the terms and conditions")]
-        public bool TermsAcceptance { get; set; } 
+        public bool TermsAcceptance { get; set; }
     }
 }
